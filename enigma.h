@@ -6,7 +6,7 @@
 /*   By: fhenrion <fhenrion@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/16 16:10:47 by fhenrion          #+#    #+#             */
-/*   Updated: 2019/12/17 12:57:02 by fhenrion         ###   ########.fr       */
+/*   Updated: 2019/12/17 15:02:03 by fhenrion         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,8 @@ typedef struct			s_conf
 	int					pos_ini[3];
 	char				wire[5][2];
 }						t_conf;
+
+t_error			get_conf(t_conf *conf, char *str);
 
 // TODO :
 // - Fonction de parsing de la configuration
