@@ -6,7 +6,7 @@
 /*   By: fhenrion <fhenrion@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/16 16:10:47 by fhenrion          #+#    #+#             */
-/*   Updated: 2019/12/17 12:13:05 by fhenrion         ###   ########.fr       */
+/*   Updated: 2019/12/17 12:57:02 by fhenrion         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,8 +29,6 @@
 # define REFLECTOR_B		"YRUHQSLDPXNGOKMIEBFZCWVJAT"
 # define REFLECTOR_C		"RDOBJNTKVEHMLFCWZAXGYIPSUQ"
 
-typedef unsigned char	t_position;
-
 typedef enum			e_error
 {
 	NO_ERROR,
@@ -41,8 +39,8 @@ typedef struct			s_conf
 {
 	char				*rotor[3];
 	char				*reflector;
-	t_position			pos_ini[3];
-	char				wire[3][2];
+	int					pos_ini[3];
+	char				wire[5][2];
 }						t_conf;
 
 // TODO :

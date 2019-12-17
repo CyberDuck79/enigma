@@ -6,7 +6,7 @@
 /*   By: fhenrion <fhenrion@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/17 11:04:45 by fhenrion          #+#    #+#             */
-/*   Updated: 2019/12/17 12:47:10 by fhenrion         ###   ########.fr       */
+/*   Updated: 2019/12/17 13:03:08 by fhenrion         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,19 +16,19 @@ void	get_rotor_conf(t_conf *conf, int rotor_i, int conf_i)
 {
 	if (conf_i == 0)
 		conf->rotor[rotor_i] = ROTOR_I;
-	if (conf_i == 1)
+	else if (conf_i == 1)
 		conf->rotor[rotor_i] = ROTOR_II;
-	if (conf_i == 2)
+	else if (conf_i == 2)
 		conf->rotor[rotor_i] = ROTOR_III;
-	if (conf_i == 3)
+	else if (conf_i == 3)
 		conf->rotor[rotor_i] = ROTOR_IV;
-	if (conf_i == 4)
+	else if (conf_i == 4)
 		conf->rotor[rotor_i] = ROTOR_V;
-	if (conf_i == 5)
+	else if (conf_i == 5)
 		conf->rotor[rotor_i] = ROTOR_VI;
-	if (conf_i == 6)
+	else if (conf_i == 6)
 		conf->rotor[rotor_i] = ROTOR_VII;
-	if (conf_i == 7)
+	else if (conf_i == 7)
 		conf->rotor[rotor_i] = ROTOR_VIII;
 }
 
@@ -38,24 +38,24 @@ t_error	parse_rotors(t_conf *conf, char **str)
 	int	rotor_2;
 	int	rotor_3;
 
-	rotor_1 = atoi(**str);
+	rotor_1 = atoi(*str);
 	if (rotor_1 < 1 || rotor_1 > 8)
 		return (ERROR);
 	get_rotor_conf(conf, 0, rotor_1 - 1);
 	*str += 2;
-	rotor_2 = atoi(**str);
+	rotor_2 = atoi(*str);
 	if (rotor_2 < 1 || rotor_2 > 8 || rotor_2 == rotor_1)
 		return (ERROR);
 	get_rotor_conf(conf, 1, rotor_2 - 1);
 	*str += 2;
-	rotor_3 = atoi(**str);
+	rotor_3 = atoi(*str);
 	if (rotor_3 < 1 || rotor_3 > 8 || rotor_3 == rotor_1 || rotor_3 == rotor_2)
 		return (ERROR);
 	get_rotor_conf(conf, 2, rotor_3 - 1);
 	*str += 2;
-	if (*str == 'B')
+	if (**str == 'B')
 		conf->reflector = REFLECTOR_B;
-	else if (*str == 'C')
+	else if (**str == 'C')
 		conf->reflector = REFLECTOR_C;
 	else
 		return (ERROR);
@@ -65,23 +65,22 @@ t_error	parse_rotors(t_conf *conf, char **str)
 
 t_error	parse_positions(t_conf *conf, char **str)
 {
-	int	position;
-
-	position = atoi(**str);
-	if (position < 1 || position > 26)
+	conf->pos_ini[0] = atoi(*str);
+	if (conf->pos_ini[0] < 1 || conf->pos_ini[0] > 26)
 		return (ERROR);
-	conf->pos_ini[0] = (t_position)position;
-	*str += 2;
-	position = atoi(**str);
-	if (position < 1 || position > 26)
+	while (**str && **str != '-')
+		*str += 1;
+	conf->pos_ini[1] = atoi(*str);
+	if (conf->pos_ini[1] < 1 || conf->pos_ini[1] > 26)
 		return (ERROR);
-	conf->pos_ini[1] = (t_position)position;
-	*str += 2;
-	position = atoi(**str);
-	if (position < 1 || position > 26)
+	while (**str && **str != '-')
+		*str += 1;
+	conf->pos_ini[2] = atoi(*str);
+	if (conf->pos_ini[2] < 1 || conf->pos_ini[2] > 26)
 		return (ERROR);
-	conf->pos_ini[2] = (t_position)position;
-	*str += 2;
+	while (**str && **str != '-')
+		*str += 1;
+	*str += 1;
 	return (NO_ERROR);
 }
 
@@ -147,11 +146,11 @@ int		main(int ac, char **av)
 			write(1, "configuration error\n", 20);
 			return (0);
 		}
-		if (decode(&conf_ini, av[2]))
-		{
-			write(1, "decoding error\n", 15);
-			return (0);
-		}
+		//if (decode(&conf_ini, av[2]))
+		//{
+		//	write(1, "decoding error\n", 15);
+		//	return (0);
+		//}
 		return (0);
 	}
 	write(1, "USAGE : configuration message\n", 30);
