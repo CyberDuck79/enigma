@@ -6,7 +6,7 @@
 /*   By: fhenrion <fhenrion@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/17 11:04:45 by fhenrion          #+#    #+#             */
-/*   Updated: 2019/12/17 12:42:24 by fhenrion         ###   ########.fr       */
+/*   Updated: 2019/12/17 12:47:10 by fhenrion         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -117,8 +117,11 @@ t_error	parse_wires(t_conf *conf, char **str)
 	size_t	index = 0;
 
 	while (index < 10)
+	{
 		if (parse_wire(conf, str, used, index))
 			return (ERROR);
+		index++;
+	}
 	return (NO_ERROR);
 }
 
