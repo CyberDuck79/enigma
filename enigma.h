@@ -6,7 +6,7 @@
 /*   By: fhenrion <fhenrion@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/16 16:10:47 by fhenrion          #+#    #+#             */
-/*   Updated: 2019/12/16 21:13:02 by fhenrion         ###   ########.fr       */
+/*   Updated: 2019/12/17 12:13:05 by fhenrion         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 
 #include <stdlib.h>
 #include <unistd.h>
+#include <string.h>
 
 # define ALPHABET			"ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 # define ROTOR_I			"EKMFLGDQVZNTOWYHXUSPAIBRCJ"
@@ -25,17 +26,30 @@
 # define ROTOR_VI			"JPGVOUMFYQBENHZRDKASXLICTW"
 # define ROTOR_VII			"NZJHGRCXMYSWBOUFAIVLPEKQDT"
 # define ROTOR_VIII			"FKQHTLXOCBJSPDZRAMEWNIUYGV"
-# define ROTOR_BETA			"LEYJVCNIXWPBQMDRTAKZGFUHOS"
-# define ROTOR_GAMMA		"FSOKANUERHMBTIYCWLQPZXVGJD"
 # define REFLECTOR_B		"YRUHQSLDPXNGOKMIEBFZCWVJAT"
 # define REFLECTOR_C		"RDOBJNTKVEHMLFCWZAXGYIPSUQ"
-# define REFLECTOR_B_THIN	"ENKQAUYWJICOPBLMDXZVFTHRGS"
-# define REFLECTOR_C_THIN	"RDOBJNTKVEHMLFCWZAXGYIPSUQ"
 
+typedef unsigned char	t_position;
+
+typedef enum			e_error
+{
+	NO_ERROR,
+	ERROR
+}						t_error;
+
+typedef struct			s_conf
+{
+	char				*rotor[3];
+	char				*reflector;
+	t_position			pos_ini[3];
+	char				wire[3][2];
+}						t_conf;
 
 // TODO :
 // - Fonction de parsing de la configuration
 // - Fonction de chiffrement
+
+// 2-5-3-B-1-24-3-A/F-G/D-G/E-G/V-Z/T
 
 // CONCEPT
 /*
@@ -86,7 +100,5 @@ index_2 = index + shift_2 > 25 ? (index + shift_2) % 26 : index + shift_2;
 input = rotor_2[index_1];
 ect...
 */
-
-
 
 #endif
