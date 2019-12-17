@@ -6,7 +6,7 @@
 /*   By: fhenrion <fhenrion@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/16 16:10:47 by fhenrion          #+#    #+#             */
-/*   Updated: 2019/12/16 18:08:41 by fhenrion         ###   ########.fr       */
+/*   Updated: 2019/12/16 21:13:02 by fhenrion         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,11 @@
 # define REFLECTOR_C		"RDOBJNTKVEHMLFCWZAXGYIPSUQ"
 # define REFLECTOR_B_THIN	"ENKQAUYWJICOPBLMDXZVFTHRGS"
 # define REFLECTOR_C_THIN	"RDOBJNTKVEHMLFCWZAXGYIPSUQ"
+
+
+// TODO :
+// - Fonction de parsing de la configuration
+// - Fonction de chiffrement
 
 // CONCEPT
 /*
@@ -81,5 +86,7 @@ index_2 = index + shift_2 > 25 ? (index + shift_2) % 26 : index + shift_2;
 input = rotor_2[index_1];
 ect...
 */
+
+
 
 #endif
