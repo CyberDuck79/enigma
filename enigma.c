@@ -6,7 +6,7 @@
 /*   By: fhenrion <fhenrion@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/17 11:04:45 by fhenrion          #+#    #+#             */
-/*   Updated: 2019/12/18 17:26:31 by fhenrion         ###   ########.fr       */
+/*   Updated: 2019/12/18 18:54:34 by fhenrion         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -135,38 +135,57 @@ t_error	get_conf(t_conf *conf, char *str)
 		return (ERROR);
 	if (parse_positions(conf, &str))
 		return (ERROR);
-	if (parse_wires(conf, &str))
+	if (parse_wires(conf, &str)) // prendre en compte les cablages
 		return (ERROR);
 	return (NO_ERROR);
 }
 
-char	cypher(t_conf *conf, char c, size_t rotor_i)
+size_t	wire_ret(t_conf *conf, char c)
 {
-	size_t	index = c - 65;
+	size_t index = 0;
 
-	if (rotor_i == 3) // faire le retour du reflecteur
+	while (index < 5)
+	{
+		if (conf->wire[index][0] == c)
+			return (conf->wire[index][1]);
+		index++;
+	}
+	return (c);
+}
+
+char	cypher(t_conf *conf, char c, size_t rotor, int ret)
+{
+	size_t	index = wire_ret(conf, c) - 65;
+
+	if (rotor == 0 && ret == 1)
 		return (c);
-	if (conf->position[rotor_i] > 25)
-		conf->position[rotor_i] %= 26;
-	if ((index += conf->position[rotor_i]) > 25)
+	if (rotor == 3)
+		return (cypher(conf, conf->reflector[index], rotor - 1, 1));
+	if (conf->position[rotor] > 25)
+		conf->position[rotor] %= 26;
+	if ((index += conf->position[rotor]) > 25)
 		index %= 26;
-	if (conf->position[rotor_i]++ > 25 && rotor_i < 3)
-		conf->position[rotor_i + 1]++;
-	return (cypher(conf, conf->rotor[rotor_i][index], rotor_i + 1));
+	if (!ret && ++conf->position[rotor] > 25 && rotor < 2)
+		conf->position[rotor + 1]++;
+	return (cypher(conf, conf->rotor[rotor][index], rotor + ret ? -1 : 1, ret));
 }
 
 t_error	encode(t_conf *conf, char *str)
 {
-	char	*encoded_str = malloc(strlen(str) + 1);
+	char	*encoded_char = malloc(strlen(str) + 1);
+	char	*encoded_str = encoded_char;
 
 	while (*str)
 	{
-		if (!(*encoded_str = cypher(conf, *str, 0)))
+		if (*str == ' ')
+			*encoded_char = ' ';
+		else if (!(*encoded_char = cypher(conf, *str, 0, 0)))
 			return (ERROR);
 		str++;
-		encoded_str++;
+		encoded_char++;
 	}
-	*encoded_str = '\0';
+	*encoded_char = '\0';
+	write(1, encoded_str, strlen(encoded_str));
 	return (NO_ERROR);
 }
 
