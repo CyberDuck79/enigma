@@ -6,7 +6,7 @@
 /*   By: fhenrion <fhenrion@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/17 11:04:45 by fhenrion          #+#    #+#             */
-/*   Updated: 2019/12/17 13:59:59 by fhenrion         ###   ########.fr       */
+/*   Updated: 2019/12/18 17:26:31 by fhenrion         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@ static t_error	next_token(char **str, char c)
 	*str += 1;
 	return (NO_ERROR);
 }
+
 
 void	get_rotor_conf(t_conf *conf, int rotor_i, int conf_i)
 {
@@ -73,14 +74,14 @@ t_error	parse_rotors(t_conf *conf, char **str)
 
 t_error	parse_positions(t_conf *conf, char **str)
 {
-	conf->pos_ini[0] = atoi(*str);
-	if (conf->pos_ini[0] < 1 || conf->pos_ini[0] > 26 || next_token(str, '-'))
+	conf->position[0] = atoi(*str);
+	if (conf->position[0] < 1 || conf->position[0] > 26 || next_token(str, '-'))
 		return (ERROR);
-	conf->pos_ini[1] = atoi(*str);
-	if (conf->pos_ini[1] < 1 || conf->pos_ini[1] > 26 || next_token(str, '-'))
+	conf->position[1] = atoi(*str);
+	if (conf->position[1] < 1 || conf->position[1] > 26 || next_token(str, '-'))
 		return (ERROR);
-	conf->pos_ini[2] = atoi(*str);
-	if (conf->pos_ini[2] < 1 || conf->pos_ini[2] > 26 || next_token(str, '-'))
+	conf->position[2] = atoi(*str);
+	if (conf->position[2] < 1 || conf->position[2] > 26 || next_token(str, '-'))
 		return (ERROR);
 	return (NO_ERROR);
 }
@@ -98,12 +99,12 @@ int	in_string(char c, char *str)
 	return (0);
 }
 
-t_error parse_wire(t_conf *conf, char **str, char *used, size_t index)
+t_error parse_wire(t_conf *conf, char **str, size_t index)
 {
-	char	alphabet[27] = ALPHABET;
-	size_t	used_i = 10 - index;
+	static char	used[11] = {0};
+	size_t		used_i = 10 - index;
 
-	if (!in_string(**str, alphabet) || in_string(**str, used + used_i))
+	if (**str < 65|| **str > 90 || in_string(**str, used + used_i))
 		return (ERROR);
 	used[used_i - 1] = **str;
 	conf->wire[index / 2][index % 2] = **str;
@@ -117,12 +118,11 @@ t_error parse_wire(t_conf *conf, char **str, char *used, size_t index)
 
 t_error	parse_wires(t_conf *conf, char **str)
 {
-	char	used[11] = {0};
 	size_t	index = 0;
 
 	while (index < 10)
 	{
-		if (parse_wire(conf, str, used, index))
+		if (parse_wire(conf, str, index))
 			return (ERROR);
 		index++;
 	}
@@ -140,6 +140,36 @@ t_error	get_conf(t_conf *conf, char *str)
 	return (NO_ERROR);
 }
 
+char	cypher(t_conf *conf, char c, size_t rotor_i)
+{
+	size_t	index = c - 65;
+
+	if (rotor_i == 3) // faire le retour du reflecteur
+		return (c);
+	if (conf->position[rotor_i] > 25)
+		conf->position[rotor_i] %= 26;
+	if ((index += conf->position[rotor_i]) > 25)
+		index %= 26;
+	if (conf->position[rotor_i]++ > 25 && rotor_i < 3)
+		conf->position[rotor_i + 1]++;
+	return (cypher(conf, conf->rotor[rotor_i][index], rotor_i + 1));
+}
+
+t_error	encode(t_conf *conf, char *str)
+{
+	char	*encoded_str = malloc(strlen(str) + 1);
+
+	while (*str)
+	{
+		if (!(*encoded_str = cypher(conf, *str, 0)))
+			return (ERROR);
+		str++;
+		encoded_str++;
+	}
+	*encoded_str = '\0';
+	return (NO_ERROR);
+}
+
 int		main(int ac, char **av)
 {
 	t_conf	conf_ini;
@@ -151,11 +181,11 @@ int		main(int ac, char **av)
 			write(1, "configuration error\n", 20);
 			return (0);
 		}
-		//if (decode(&conf_ini, av[2]))
-		//{
-		//	write(1, "decoding error\n", 15);
-		//	return (0);
-		//}
+		if (encode(&conf_ini, av[2]))
+		{
+			write(1, "encoding error\n", 15);
+			return (0);
+		}
 		return (0);
 	}
 	write(1, "USAGE : configuration message\n", 30);
