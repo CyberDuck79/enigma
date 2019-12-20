@@ -6,7 +6,7 @@
 /*   By: fhenrion <fhenrion@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/17 11:04:45 by fhenrion          #+#    #+#             */
-/*   Updated: 2019/12/20 13:39:15 by fhenrion         ###   ########.fr       */
+/*   Updated: 2019/12/20 20:55:06 by fhenrion         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,10 +15,10 @@
 static t_error	next_token(char **str, char c)
 {
 	while (**str && **str != c)
-		*str += 1;
+		(*str)++;
 	if (!**str)
 		return (ERROR);
-	*str += 1;
+	(*str)++;
 	return (NO_ERROR);
 }
 
