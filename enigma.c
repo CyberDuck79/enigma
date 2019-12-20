@@ -6,7 +6,7 @@
 /*   By: fhenrion <fhenrion@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/17 11:04:45 by fhenrion          #+#    #+#             */
-/*   Updated: 2019/12/18 18:54:34 by fhenrion         ###   ########.fr       */
+/*   Updated: 2019/12/20 13:39:15 by fhenrion         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,47 +22,29 @@ static t_error	next_token(char **str, char c)
 	return (NO_ERROR);
 }
 
-
-void	get_rotor_conf(t_conf *conf, int rotor_i, int conf_i)
+const char	*get_rotor_conf(t_rotor i, char **rotors)
 {
-	if (conf_i == 0)
-		conf->rotor[rotor_i] = ROTOR_I;
-	else if (conf_i == 1)
-		conf->rotor[rotor_i] = ROTOR_II;
-	else if (conf_i == 2)
-		conf->rotor[rotor_i] = ROTOR_III;
-	else if (conf_i == 3)
-		conf->rotor[rotor_i] = ROTOR_IV;
-	else if (conf_i == 4)
-		conf->rotor[rotor_i] = ROTOR_V;
-	else if (conf_i == 5)
-		conf->rotor[rotor_i] = ROTOR_VI;
-	else if (conf_i == 6)
-		conf->rotor[rotor_i] = ROTOR_VII;
-	else if (conf_i == 7)
-		conf->rotor[rotor_i] = ROTOR_VIII;
+	return (rotors[i]);
 }
 
 t_error	parse_rotors(t_conf *conf, char **str)
 {
-	int	rotor_1;
-	int	rotor_2;
-	int	rotor_3;
+	t_rotor	rotor[3];
 
-	rotor_1 = atoi(*str);
-	if (rotor_1 < 1 || rotor_1 > 8 || next_token(str, '-'))
+	rotor[0] = atoi(*str);
+	if (rotor[0] < 1 || rotor[0] > 8 || next_token(str, '-'))
 		return (ERROR);
-	get_rotor_conf(conf, 0, rotor_1 - 1);
-	rotor_2 = atoi(*str);
-	if (rotor_2 < 1 || rotor_2 > 8 || rotor_2 == rotor_1
+	conf->rotor[0] = get_rotor_conf(rotor[0] - 1, ROTORS);
+	rotor[1] = atoi(*str);
+	if (rotor[1] < 1 || rotor[1] > 8 || rotor[1] == rotor[0]
 	|| next_token(str, '-'))
 		return (ERROR);
-	get_rotor_conf(conf, 1, rotor_2 - 1);
-	rotor_3 = atoi(*str);
-	if (rotor_3 < 1 || rotor_3 > 8 || rotor_3 == rotor_1 || rotor_3 == rotor_2
-	|| next_token(str, '-'))
+	conf->rotor[1] = get_rotor_conf(rotor[1] - 1, ROTORS);
+	rotor[2] = atoi(*str);
+	if (rotor[2] < 1 || rotor[2] > 8 || rotor[2] == rotor[0]
+	|| rotor[2] == rotor[1] || next_token(str, '-'))
 		return (ERROR);
-	get_rotor_conf(conf, 2, rotor_3 - 1);
+	conf->rotor[2] = get_rotor_conf(rotor[2] - 1, ROTORS);
 	if (**str == 'B')
 		conf->reflector = REFLECTOR_B;
 	else if (**str == 'C')
@@ -88,29 +70,29 @@ t_error	parse_positions(t_conf *conf, char **str)
 
 int	in_string(char c, char *str)
 {
-	size_t	index = 0;
+	size_t	i = 0;
 
-	while (str[index])
+	while (str[i])
 	{
-		if (str[index] == c)
+		if (str[i] == c)
 			return (1);
-		index++;
+		i++;
 	}
 	return (0);
 }
 
-t_error parse_wire(t_conf *conf, char **str, size_t index)
+t_error parse_wire(t_conf *conf, char **str, size_t i)
 {
 	static char	used[11] = {0};
-	size_t		used_i = 10 - index;
+	size_t		used_i = 10 - i;
 
 	if (**str < 65|| **str > 90 || in_string(**str, used + used_i))
 		return (ERROR);
 	used[used_i - 1] = **str;
-	conf->wire[index / 2][index % 2] = **str;
-	if (index == 9)
+	conf->wire[i / 2][i % 2] = **str;
+	if (i == 9)
 		return (NO_ERROR);
-	else if (index % 2)
+	else if (i % 2)
 		return (next_token(str, '-'));
 	else
 		return (next_token(str, '/'));
@@ -118,13 +100,13 @@ t_error parse_wire(t_conf *conf, char **str, size_t index)
 
 t_error	parse_wires(t_conf *conf, char **str)
 {
-	size_t	index = 0;
+	size_t	i = 0;
 
-	while (index < 10)
+	while (i < 10)
 	{
-		if (parse_wire(conf, str, index))
+		if (parse_wire(conf, str, i))
 			return (ERROR);
-		index++;
+		i++;
 	}
 	return (NO_ERROR);
 }
@@ -135,66 +117,83 @@ t_error	get_conf(t_conf *conf, char *str)
 		return (ERROR);
 	if (parse_positions(conf, &str))
 		return (ERROR);
-	if (parse_wires(conf, &str)) // prendre en compte les cablages
+	if (parse_wires(conf, &str))
 		return (ERROR);
 	return (NO_ERROR);
 }
 
-size_t	wire_ret(t_conf *conf, char c)
+char	wire(t_conf *conf, char c)
 {
-	size_t index = 0;
+	size_t i = 0;
 
-	while (index < 5)
+	while (i < 5)
 	{
-		if (conf->wire[index][0] == c)
-			return (conf->wire[index][1]);
-		index++;
+		if (conf->wire[i][0] == c)
+			return (conf->wire[i][1]);
+		if (conf->wire[i][1] == c)
+			return (conf->wire[i][0]);
+		i++;
 	}
 	return (c);
 }
 
-char	cypher(t_conf *conf, char c, size_t rotor, int ret)
+void	rotors_shift(t_conf *conf, t_rotor r)
 {
-	size_t	index = wire_ret(conf, c) - 65;
+	if (++conf->position[r] > 25)
+	{
+		conf->position[r] = 0;
+		if (++conf->position[r + 1] > 25)
+		{
+			conf->position[r + 1] = 0;
+			if (++conf->position[r + 2] > 25)
+				conf->position[r + 2] = 0;
+		}
+	}
+}
 
-	if (rotor == 0 && ret == 1)
+// mauvaise comprehension du shift ?
+char	cypher(t_conf *conf, char c, t_rotor r, t_dir dir)
+{
+	size_t	i = c - 65;
+
+	if (r == 0 && dir == REFLECTION)
 		return (c);
-	if (rotor == 3)
-		return (cypher(conf, conf->reflector[index], rotor - 1, 1));
-	if (conf->position[rotor] > 25)
-		conf->position[rotor] %= 26;
-	if ((index += conf->position[rotor]) > 25)
-		index %= 26;
-	if (!ret && ++conf->position[rotor] > 25 && rotor < 2)
-		conf->position[rotor + 1]++;
-	return (cypher(conf, conf->rotor[rotor][index], rotor + ret ? -1 : 1, ret));
+	if (r == 0 && dir == FIRST_PASS)
+		rotors_shift(conf, r);
+	if (r == 3)
+		return (cypher(conf, conf->reflector[i], r - 1, REFLECTION));
+	if ((i += conf->position[r]) > 25)
+		i %= 26;
+	return (cypher(conf, conf->rotor[r][i], dir ? r - 1 : r + 1, dir));
 }
 
 t_error	encode(t_conf *conf, char *str)
 {
-	char	*encoded_char = malloc(strlen(str) + 1);
-	char	*encoded_str = encoded_char;
+	char	*enc_char = malloc(strlen(str) + 1);
+	char	*enc_str = enc_char;
 
 	while (*str)
 	{
 		if (*str == ' ')
-			*encoded_char = ' ';
-		else if (!(*encoded_char = cypher(conf, *str, 0, 0)))
+			*enc_char = ' ';
+		else if (!(*enc_char = cypher(conf, wire(conf, *str), 0, FIRST_PASS)))
 			return (ERROR);
+		enc_char++;
 		str++;
-		encoded_char++;
 	}
-	*encoded_char = '\0';
-	write(1, encoded_str, strlen(encoded_str));
+	*enc_char = '\0';
+	write(1, enc_str, strlen(enc_str));
 	return (NO_ERROR);
 }
 
+// TODO : position du reflecteur
 int		main(int ac, char **av)
 {
 	t_conf	conf_ini;
 
 	if (ac == 3)
 	{
+		// encore un decalage en plus en parametre ?
 		if (get_conf(&conf_ini, av[1]))
 		{
 			write(1, "configuration error\n", 20);
