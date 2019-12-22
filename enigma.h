@@ -6,7 +6,7 @@
 /*   By: fhenrion <fhenrion@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/16 16:10:47 by fhenrion          #+#    #+#             */
-/*   Updated: 2019/12/20 11:22:55 by fhenrion         ###   ########.fr       */
+/*   Updated: 2019/12/22 12:27:06 by fhenrion         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,7 @@ typedef struct	s_conf
 	const char	*rotor[3];
 	const char	*reflector;
 	int			position[3];
-	char		wire[5][2];
+	char		*wires[2];
 }				t_conf;
 
 t_error			get_conf(t_conf *conf, char *str);

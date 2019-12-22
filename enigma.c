@@ -6,7 +6,7 @@
 /*   By: fhenrion <fhenrion@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/17 11:04:45 by fhenrion          #+#    #+#             */
-/*   Updated: 2019/12/20 20:55:06 by fhenrion         ###   ########.fr       */
+/*   Updated: 2019/12/22 12:41:29 by fhenrion         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,14 +56,14 @@ t_error	parse_rotors(t_conf *conf, char **str)
 
 t_error	parse_positions(t_conf *conf, char **str)
 {
-	conf->position[0] = atoi(*str);
-	if (conf->position[0] < 1 || conf->position[0] > 26 || next_token(str, '-'))
+	conf->position[0] = atoi(*str) - 1;
+	if (conf->position[0] < 0 || conf->position[0] > 25 || next_token(str, '-'))
 		return (ERROR);
-	conf->position[1] = atoi(*str);
-	if (conf->position[1] < 1 || conf->position[1] > 26 || next_token(str, '-'))
+	conf->position[1] = atoi(*str) - 1;
+	if (conf->position[1] < 0 || conf->position[1] > 25 || next_token(str, '-'))
 		return (ERROR);
-	conf->position[2] = atoi(*str);
-	if (conf->position[2] < 1 || conf->position[2] > 26 || next_token(str, '-'))
+	conf->position[2] = atoi(*str) - 1;
+	if (conf->position[2] < 0 || conf->position[2] > 25 || next_token(str, '-'))
 		return (ERROR);
 	return (NO_ERROR);
 }
@@ -81,85 +81,92 @@ int	in_string(char c, char *str)
 	return (0);
 }
 
+int		check_char(char c)
+{
+	return (c >= 'A' && c <= 'Z');
+}
+
 t_error parse_wire(t_conf *conf, char **str, size_t i)
 {
-	static char	used[11] = {0};
-	size_t		used_i = 10 - i;
+	static char	*used[2];
+	// en cours nouveau parsing cablages
+}
 
-	if (**str < 65|| **str > 90 || in_string(**str, used + used_i))
-		return (ERROR);
-	used[used_i - 1] = **str;
-	conf->wire[i / 2][i % 2] = **str;
-	if (i == 9)
-		return (NO_ERROR);
-	else if (i % 2)
-		return (next_token(str, '-'));
-	else
-		return (next_token(str, '/'));
+size_t	count_wires(char *str)
+{
+	size_t count = 0;
+
+	while (*str)
+	{
+		if (*str == '/')
+			count++;
+		str++;
+	}
+	return (count);
 }
 
 t_error	parse_wires(t_conf *conf, char **str)
 {
 	size_t	i = 0;
+	size_t	wires_nb = count_wires(*str);
 
-	while (i < 10)
+	conf->wires[0] = malloc(wires_nb + 1);
+	conf->wires[1] = malloc(wires_nb + 1); // faire gestion terminaison
+	if (!conf->wires[0] || !conf->wires[0])
+		return (ERROR);
+	// continuer parsing et nouvelle gestion des cablages
+	while (check_char(**str)) // permettre un nombre non defini de cablages
 	{
 		if (parse_wire(conf, str, i))
 			return (ERROR);
 		i++;
 	}
-	return (NO_ERROR);
+	return (**str ? ERROR : NO_ERROR);
 }
 
 t_error	get_conf(t_conf *conf, char *str)
 {
 	if (parse_rotors(conf, &str))
 		return (ERROR);
+	//write(1, "rotors OK\n", 10);
 	if (parse_positions(conf, &str))
 		return (ERROR);
+	//write(1, "positions OK\n", 13);
 	if (parse_wires(conf, &str))
+	{
+		free_wires(conf->wires);
 		return (ERROR);
+	}
+	//write(1, "wires OK\n", 9);
 	return (NO_ERROR);
 }
 
 char	wire(t_conf *conf, char c)
 {
-	size_t i = 0;
-
-	while (i < 5)
-	{
-		if (conf->wire[i][0] == c)
-			return (conf->wire[i][1]);
-		if (conf->wire[i][1] == c)
-			return (conf->wire[i][0]);
-		i++;
-	}
+	// refaire apres nouveau parsing cablage
 	return (c);
 }
 
-void	rotors_shift(t_conf *conf, t_rotor r)
+void	rotors_shift(t_conf *conf)
 {
-	if (++conf->position[r] > 25)
+	if (++conf->position[0] > 25)
 	{
-		conf->position[r] = 0;
-		if (++conf->position[r + 1] > 25)
+		conf->position[0] = 0;
+		if (++conf->position[1] > 25)
 		{
-			conf->position[r + 1] = 0;
-			if (++conf->position[r + 2] > 25)
-				conf->position[r + 2] = 0;
+			conf->position[1] = 0;
+			if (++conf->position[2] > 25)
+				conf->position[2] = 0;
 		}
 	}
 }
 
-// mauvaise comprehension du shift ?
 char	cypher(t_conf *conf, char c, t_rotor r, t_dir dir)
 {
 	size_t	i = c - 65;
 
 	if (r == 0 && dir == REFLECTION)
 		return (c);
-	if (r == 0 && dir == FIRST_PASS)
-		rotors_shift(conf, r);
 	if (r == 3)
 		return (cypher(conf, conf->reflector[i], r - 1, REFLECTION));
 	if ((i += conf->position[r]) > 25)
@@ -174,11 +181,15 @@ t_error	encode(t_conf *conf, char *str)
 
 	while (*str)
 	{
-		if (*str == ' ')
-			*enc_char = ' ';
-		else if (!(*enc_char = cypher(conf, wire(conf, *str), 0, FIRST_PASS)))
-			return (ERROR);
-		enc_char++;
+		if (check_char(*str))
+		{
+			rotors_shift(conf);
+			*enc_char = wire(conf, *str);
+			if (!(*enc_char = cypher(conf, *enc_char, 0, FIRST_PASS)))
+				return (ERROR);
+			*enc_char = wire(conf, *str);
+			enc_char++;
+		}
 		str++;
 	}
 	*enc_char = '\0';
@@ -186,24 +197,20 @@ t_error	encode(t_conf *conf, char *str)
 	return (NO_ERROR);
 }
 
-// TODO : position du reflecteur
 int		main(int ac, char **av)
 {
 	t_conf	conf_ini;
 
 	if (ac == 3)
 	{
-		// encore un decalage en plus en parametre ?
 		if (get_conf(&conf_ini, av[1]))
 		{
 			write(1, "configuration error\n", 20);
 			return (0);
 		}
 		if (encode(&conf_ini, av[2]))
-		{
 			write(1, "encoding error\n", 15);
-			return (0);
-		}
+		free_wires(conf_ini.wires);
 		return (0);
 	}
 	write(1, "USAGE : configuration message\n", 30);
