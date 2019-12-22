@@ -6,7 +6,7 @@
 /*   By: fhenrion <fhenrion@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/16 16:10:47 by fhenrion          #+#    #+#             */
-/*   Updated: 2019/12/22 12:27:06 by fhenrion         ###   ########.fr       */
+/*   Updated: 2019/12/22 18:23:41 by fhenrion         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@
 # define ROTOR_VIII		"FKQHTLXOCBJSPDZRAMEWNIUYGV"
 # define REFLECTOR_B	"YRUHQSLDPXNGOKMIEBFZCWVJAT"
 # define REFLECTOR_C	"RDOBJNTKVEHMLFCWZAXGYIPSUQ"
-# define ROTORS (char* [8]) \
+# define ROTORS (const char* [8]) \
 {ROTOR_I,ROTOR_II,ROTOR_III,ROTOR_IV,ROTOR_V,ROTOR_VI,ROTOR_VII,ROTOR_VIII}
 
 typedef unsigned char t_rotor;
@@ -50,7 +50,7 @@ typedef struct	s_conf
 	const char	*rotor[3];
 	const char	*reflector;
 	int			position[3];
-	char		*wires[2];
+	char		wires[2][13];
 }				t_conf;
 
 t_error			get_conf(t_conf *conf, char *str);
