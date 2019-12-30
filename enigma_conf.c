@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   enigma_ini.c                                       :+:      :+:    :+:   */
+/*   enigma_conf.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: fhenrion <fhenrion@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/22 18:16:21 by fhenrion          #+#    #+#             */
-/*   Updated: 2019/12/22 18:22:59 by fhenrion         ###   ########.fr       */
+/*   Updated: 2019/12/30 13:18:57 by fhenrion         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,16 +36,16 @@ static t_error		parse_rotors(t_conf *conf, char **str)
 {
 	t_rotor	rotor[3];
 
-	rotor[0] = atoi(*str);
+	rotor[0] = (t_rotor)atoi(*str);
 	if (rotor[0] < 1 || rotor[0] > 8 || next_token(str, '-'))
 		return (ERROR);
 	conf->rotor[0] = get_rotor(rotor[0] - 1, ROTORS);
-	rotor[1] = atoi(*str);
+	rotor[1] = (t_rotor)atoi(*str);
 	if (rotor[1] < 1 || rotor[1] > 8 || rotor[1] == rotor[0]
 	|| next_token(str, '-'))
 		return (ERROR);
 	conf->rotor[1] = get_rotor(rotor[1] - 1, ROTORS);
-	rotor[2] = atoi(*str);
+	rotor[2] = (t_rotor)atoi(*str);
 	if (rotor[2] < 1 || rotor[2] > 8 || rotor[2] == rotor[0]
 	|| rotor[2] == rotor[1] || next_token(str, '-'))
 		return (ERROR);
@@ -61,13 +61,13 @@ static t_error		parse_rotors(t_conf *conf, char **str)
 
 static t_error		parse_positions(t_conf *conf, char **str)
 {
-	conf->position[0] = atoi(*str) - 1;
+	conf->position[0] = (int8_t)atoi(*str) - 1;
 	if (conf->position[0] < 0 || conf->position[0] > 25 || next_token(str, '-'))
 		return (ERROR);
-	conf->position[1] = atoi(*str) - 1;
+	conf->position[1] = (int8_t)atoi(*str) - 1;
 	if (conf->position[1] < 0 || conf->position[1] > 25 || next_token(str, '-'))
 		return (ERROR);
-	conf->position[2] = atoi(*str) - 1;
+	conf->position[2] = (int8_t)atoi(*str) - 1;
 	if (conf->position[2] < 0 || conf->position[2] > 25 || next_token(str, '-'))
 		return (ERROR);
 	return (NO_ERROR);

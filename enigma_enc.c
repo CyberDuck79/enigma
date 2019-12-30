@@ -6,7 +6,7 @@
 /*   By: fhenrion <fhenrion@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/17 11:04:45 by fhenrion          #+#    #+#             */
-/*   Updated: 2019/12/23 10:48:10 by fhenrion         ###   ########.fr       */
+/*   Updated: 2019/12/30 17:48:11 by fhenrion         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,18 +46,14 @@ static void	rotors_shift(t_conf *conf)
 	}
 }
 
-static char	cypher(t_conf *conf, char c, t_rotor r, t_dir dir)
+static char	cypher(t_conf *conf, uint8_t i, t_rotor r, t_dir dir)
 {
-	size_t	i = c - 65;
-
-	write(1, &c, 1);
-	write(1, "\n", 1);
 	if (r == 0 && dir == REFLECTION)
-		return (c);
+		return ((char)(i + 65));
 	if (r == 3)
 		return (cypher(conf, conf->reflector[i], r - 1, REFLECTION));
 	if ((i += conf->position[r]) > 25)
-		i %= 26;
+		i -= 26;
 	return (cypher(conf, conf->rotor[r][i], dir ? r - 1 : r + 1, dir));
 }
 
@@ -72,7 +68,7 @@ t_error		encode(t_conf *conf, char *str)
 		{
 			rotors_shift(conf);
 			//*enc_char = wire(conf, *str);
-			*enc_char = cypher(conf, *str, 0, FIRST_PASS);
+			*enc_char = cypher(conf, *str - 65, 0, FIRST_PASS);
 			//*enc_char = wire(conf, *enc_char);
 			enc_char++;
 		}
