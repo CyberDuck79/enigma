@@ -6,7 +6,7 @@
 /*   By: fhenrion <fhenrion@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/17 11:04:45 by fhenrion          #+#    #+#             */
-/*   Updated: 2019/12/22 18:27:26 by fhenrion         ###   ########.fr       */
+/*   Updated: 2019/12/23 10:48:10 by fhenrion         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@ static int	check_char(char c)
 {
 	return (c >= 'A' && c <= 'Z');
 }
-
+/*
 static char	wire(t_conf *conf, char c)
 {
 	size_t	i = 0;
@@ -31,7 +31,7 @@ static char	wire(t_conf *conf, char c)
 	}
 	return (c);
 }
-
+*/
 static void	rotors_shift(t_conf *conf)
 {
 	if (++conf->position[0] > 25)
@@ -50,6 +50,8 @@ static char	cypher(t_conf *conf, char c, t_rotor r, t_dir dir)
 {
 	size_t	i = c - 65;
 
+	write(1, &c, 1);
+	write(1, "\n", 1);
 	if (r == 0 && dir == REFLECTION)
 		return (c);
 	if (r == 3)
@@ -69,9 +71,9 @@ t_error		encode(t_conf *conf, char *str)
 		if (check_char(*str))
 		{
 			rotors_shift(conf);
-			*enc_char = wire(conf, *str);
-			*enc_char = cypher(conf, *enc_char, 0, FIRST_PASS);
-			*enc_char = wire(conf, *enc_char);
+			//*enc_char = wire(conf, *str);
+			*enc_char = cypher(conf, *str, 0, FIRST_PASS);
+			//*enc_char = wire(conf, *enc_char);
 			enc_char++;
 		}
 		str++;
