@@ -6,18 +6,18 @@
 /*   By: fhenrion <fhenrion@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/22 18:16:21 by fhenrion          #+#    #+#             */
-/*   Updated: 2019/12/30 13:18:57 by fhenrion         ###   ########.fr       */
+/*   Updated: 2019/12/31 17:33:59 by fhenrion         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "enigma.h"
 
-static int			check_char(char c)
+static int		check_char(char c)
 {
 	return (c >= 'A' && c <= 'Z');
 }
 
-static t_error		next_token(char **str, char c)
+static t_error	next_token(char **str, char c)
 {
 	while (**str && **str != c)
 		(*str)++;
@@ -27,78 +27,100 @@ static t_error		next_token(char **str, char c)
 	return (NO_ERROR);
 }
 
-static const char	*get_rotor(t_rotor i, const char **rotors)
+static t_error	check_rotor_nb(int *rotor, int nb)
 {
-	return (rotors[i]);
+	if (rotor[nb] < 0 || rotor[nb] > 7)
+		return (ERROR);
+	if (nb > 0 && rotor[1] == rotor[0])
+		return (ERROR);
+	if (nb > 1 && (rotor[2] == rotor[0] || rotor[2] == rotor[1]))
+		return (ERROR);
+	return (NO_ERROR);
 }
 
-static t_error		parse_rotors(t_conf *conf, char **str)
+static void		copy_rotor(const int **rotors, int i, int *rotor)
 {
-	t_rotor	rotor[3];
+	memcpy(rotor, rotors[i], sizeof(int) * 26);
+}
 
-	rotor[0] = (t_rotor)atoi(*str);
-	if (rotor[0] < 1 || rotor[0] > 8 || next_token(str, '-'))
+// inverser le sens d'entree des rotors
+static t_error	parse_rotors(t_conf *conf, char **str)
+{
+	int	rotor_nb[3] = {0};
+
+	rotor_nb[0] = atoi(*str) - 1;
+	if (check_rotor_nb(rotor_nb, 0) || next_token(str, '-'))
 		return (ERROR);
-	conf->rotor[0] = get_rotor(rotor[0] - 1, ROTORS);
-	rotor[1] = (t_rotor)atoi(*str);
-	if (rotor[1] < 1 || rotor[1] > 8 || rotor[1] == rotor[0]
-	|| next_token(str, '-'))
+	copy_rotor(ROTORS, rotor_nb[0], conf->rotor[0][0]);
+	copy_rotor(R_ROTORS, rotor_nb[0], conf->rotor[0][1]);
+	rotor_nb[1] = atoi(*str) - 1;
+	if (check_rotor_nb(rotor_nb, 1) || next_token(str, '-'))
 		return (ERROR);
-	conf->rotor[1] = get_rotor(rotor[1] - 1, ROTORS);
-	rotor[2] = (t_rotor)atoi(*str);
-	if (rotor[2] < 1 || rotor[2] > 8 || rotor[2] == rotor[0]
-	|| rotor[2] == rotor[1] || next_token(str, '-'))
+	copy_rotor(ROTORS, rotor_nb[1], conf->rotor[1][0]);
+	copy_rotor(R_ROTORS, rotor_nb[1], conf->rotor[1][1]);
+	rotor_nb[2] = atoi(*str) - 1;
+	if (check_rotor_nb(rotor_nb, 2) || next_token(str, '-'))
 		return (ERROR);
-	conf->rotor[2] = get_rotor(rotor[2] - 1, ROTORS);
+	copy_rotor(ROTORS, rotor_nb[2], conf->rotor[2][0]);
+	copy_rotor(R_ROTORS, rotor_nb[2], conf->rotor[2][1]);
 	if (**str == 'B')
-		conf->reflector = REFLECTOR_B;
+		copy_rotor(REFLECTORS, 0, conf->reflector);
 	else if (**str == 'C')
-		conf->reflector = REFLECTOR_C;
+		copy_rotor(REFLECTORS, 1, conf->reflector);
 	else
 		return (ERROR);
 	return (next_token(str, '-'));
 }
 
-static t_error		parse_positions(t_conf *conf, char **str)
+static t_error	check_position(int position)
 {
-	conf->position[0] = (int8_t)atoi(*str) - 1;
-	if (conf->position[0] < 0 || conf->position[0] > 25 || next_token(str, '-'))
-		return (ERROR);
-	conf->position[1] = (int8_t)atoi(*str) - 1;
-	if (conf->position[1] < 0 || conf->position[1] > 25 || next_token(str, '-'))
-		return (ERROR);
-	conf->position[2] = (int8_t)atoi(*str) - 1;
-	if (conf->position[2] < 0 || conf->position[2] > 25 || next_token(str, '-'))
+	if (position < 0 || position > 25)
 		return (ERROR);
 	return (NO_ERROR);
 }
 
-static t_error		parse_wire(t_conf *conf, char **str, size_t wire_nb)
+static t_error	parse_positions(t_conf *conf, char **str)
+{
+	conf->position[0] = (**str - 65);
+	if (check_position(conf->position[0]) || next_token(str, '-'))
+		return (ERROR);
+	conf->position[1] = (**str - 65);
+	if (check_position(conf->position[1]) || next_token(str, '-'))
+		return (ERROR);
+	conf->position[2] = (**str - 65);
+	if (check_position(conf->position[2]) || next_token(str, '-'))
+		return (ERROR);
+	return (NO_ERROR);
+}
+
+static t_error	check_wire(t_conf *conf, char *str)
 {
 	size_t	i = 0;
 
 	while (conf->wires[0][i])
 	{
-		if (**str == conf->wires[0][i] || **str == conf->wires[1][i])
+		if (*str == conf->wires[0][i] || *str == conf->wires[1][i])
 			return (ERROR);
 		i++;
 	}
+	return (NO_ERROR);
+}
+
+static t_error	parse_wire(t_conf *conf, char **str, size_t wire_nb)
+{
+	if (check_wire(conf, *str))
+		return (ERROR);
 	conf->wires[0][wire_nb] = **str;
 	if (next_token(str, '/'))
 		return (ERROR);
-	i = 0;
-	while (conf->wires[0][i])
-	{
-		if (**str == conf->wires[0][i] || **str == conf->wires[1][i])
-			return (ERROR);
-		i++;
-	}
+	if (check_wire(conf, *str))
+		return (ERROR);
 	conf->wires[1][wire_nb] = **str;
 	next_token(str, '-');
 	return (NO_ERROR);
 }
 
-static t_error		parse_wires(t_conf *conf, char **str)
+static t_error	parse_wires(t_conf *conf, char **str)
 {
 	size_t	i = 0;
 
@@ -113,7 +135,7 @@ static t_error		parse_wires(t_conf *conf, char **str)
 	return (**str ? ERROR : NO_ERROR);
 }
 
-t_error				get_conf(t_conf *conf, char *str)
+t_error			get_conf(t_conf *conf, char *str)
 {
 	if (parse_rotors(conf, &str))
 		return (ERROR);

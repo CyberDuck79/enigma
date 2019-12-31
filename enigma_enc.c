@@ -6,17 +6,18 @@
 /*   By: fhenrion <fhenrion@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/17 11:04:45 by fhenrion          #+#    #+#             */
-/*   Updated: 2019/12/30 17:48:11 by fhenrion         ###   ########.fr       */
+/*   Updated: 2019/12/31 17:33:38 by fhenrion         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "enigma.h"
+#include <stdio.h>
 
 static int	check_char(char c)
 {
 	return (c >= 'A' && c <= 'Z');
 }
-/*
+
 static char	wire(t_conf *conf, char c)
 {
 	size_t	i = 0;
@@ -31,7 +32,7 @@ static char	wire(t_conf *conf, char c)
 	}
 	return (c);
 }
-*/
+
 static void	rotors_shift(t_conf *conf)
 {
 	if (++conf->position[0] > 25)
@@ -46,15 +47,18 @@ static void	rotors_shift(t_conf *conf)
 	}
 }
 
-static char	cypher(t_conf *conf, uint8_t i, t_rotor r, t_dir dir)
+static char	cypher(t_conf *conf, int i, t_rotor r, t_dir d)
 {
-	if (r == 0 && dir == REFLECTION)
-		return ((char)(i + 65));
-	if (r == 3)
-		return (cypher(conf, conf->reflector[i], r - 1, REFLECTION));
+	if (r == REFLECTOR)
+		return (cypher(conf, conf->reflector[i], 2, 1));
 	if ((i += conf->position[r]) > 25)
 		i -= 26;
-	return (cypher(conf, conf->rotor[r][i], dir ? r - 1 : r + 1, dir));
+	i = conf->rotor[r][d][i];
+	if ((i -= conf->position[r]) < 0)
+		i += 26;
+	if (r == ROTOR_I && d == REFLECTION)
+		return ((char)(i + 65));
+	return (cypher(conf, i, d ? r - 1 : r + 1, d));
 }
 
 t_error		encode(t_conf *conf, char *str)
@@ -67,9 +71,8 @@ t_error		encode(t_conf *conf, char *str)
 		if (check_char(*str))
 		{
 			rotors_shift(conf);
-			//*enc_char = wire(conf, *str);
-			*enc_char = cypher(conf, *str - 65, 0, FIRST_PASS);
-			//*enc_char = wire(conf, *enc_char);
+			*enc_char = cypher(conf, wire(conf, *str) - 65, 0, 0);
+			*enc_char = wire(conf, *enc_char);
 			enc_char++;
 		}
 		str++;
