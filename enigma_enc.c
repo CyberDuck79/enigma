@@ -50,7 +50,7 @@ static void	rotors_shift(t_conf *conf)
 static char	cypher(t_conf *conf, int i, t_rotor r, t_dir d)
 {
 	if (r == REFLECTOR)
-		return (cypher(conf, conf->reflector[i], 2, 1));
+		return (cypher(conf, conf->reflector[i], 2, REFLECTION));
 	if ((i += conf->position[r]) > 25)
 		i -= 26;
 	i = conf->rotor[r][d][i];
