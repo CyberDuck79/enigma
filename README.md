@@ -1,8 +1,16 @@
-# enigma
-Enigma Machine
-
-configuration :
-rotor_number1-rotor_number2-rotor_number3-reflector_letter-wire1_letter1/wire1_letter2-wire2_letter1/wire2_letter2...  
-rotor_number cannot be repeated  
-letter cannot be repeated in all wires  
-so max 13 wires (all letters connected)  
+# Enigma Machine
+## Personnal project
+Implementation of a enigma machine in C.  
+### USAGE :
+first arg : configuration  
+seconde arg : message  
+### configration :
+3 rotors among 8 to put in the machine, order matters and rotors cannot be used twice.  
+1 reflector : B or C.  
+3 starting postions set by letter (A-Z).  
+0 to 13 wires that connect 2 letters, a letter can only be connected twice.
+### configuration syntax :
+rotor1-rotor2-rotor3-reflector-position1-position2-position3-wire1_letter1/wire1_letter2-wire2_letter1/wire2_letter2...  
+exemple :  
+"4-2-7-C-Z-R-W-A/Z-B/R-S/W" "TEST DE CHIFFREMENT" -> NHROUCQFEYKQLNZXS  
+"4-2-7-C-Z-R-W-A/Z-B/R-S/W" "NHROUCQFEYKQLNZXS" -> TESTDECHIFFREMENT  
