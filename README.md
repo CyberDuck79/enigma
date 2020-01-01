@@ -2,7 +2,7 @@
 ## Personnal project
 Implementation of a enigma machine in C.  
 ### USAGE :
-compilation : launch make command
+compilation : launch make command  
 first arg : configuration  
 seconde arg : message  
 ### configration :
