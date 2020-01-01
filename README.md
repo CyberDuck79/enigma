@@ -2,6 +2,7 @@
 ## Personnal project
 Implementation of a enigma machine in C.  
 ### USAGE :
+compilation : launch make command
 first arg : configuration  
 seconde arg : message  
 ### configration :
@@ -12,5 +13,5 @@ seconde arg : message
 ### configuration syntax :
 rotor1-rotor2-rotor3-reflector-position1-position2-position3-wire1_letter1/wire1_letter2-wire2_letter1/wire2_letter2...  
 exemple :  
-"4-2-7-C-Z-R-W-A/Z-B/R-S/W" "TEST DE CHIFFREMENT" -> NHROUCQFEYKQLNZXS  
-"4-2-7-C-Z-R-W-A/Z-B/R-S/W" "NHROUCQFEYKQLNZXS" -> TESTDECHIFFREMENT  
+./enigma_machine "4-2-7-C-Z-R-W-A/Z-B/R-S/W" "TEST DE CHIFFREMENT" -> NHROUCQFEYKQLNZXS  
+./enigma_machine "4-2-7-C-Z-R-W-A/Z-B/R-S/W" "NHROUCQFEYKQLNZXS" -> TESTDECHIFFREMENT  
