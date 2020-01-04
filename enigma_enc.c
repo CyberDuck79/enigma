@@ -6,7 +6,7 @@
 /*   By: fhenrion <fhenrion@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/17 11:04:45 by fhenrion          #+#    #+#             */
-/*   Updated: 2019/12/31 17:33:38 by fhenrion         ###   ########.fr       */
+/*   Updated: 2020/01/04 17:32:56 by fhenrion         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,8 +63,8 @@ static char	cypher(t_conf *conf, int i, t_rotor r, t_dir d)
 
 t_error		encode(t_conf *conf, char *str)
 {
-	char	*enc_char = malloc(strlen(str) + 1);
-	char	*enc_str = enc_char;
+	char	enc_str[strlen(str) + 1];
+	char	*enc_char = enc_str;
 
 	while (*str)
 	{
@@ -79,5 +79,6 @@ t_error		encode(t_conf *conf, char *str)
 	}
 	*enc_char = '\0';
 	write(1, enc_str, strlen(enc_str));
+	write(1, "\n", 1);
 	return (NO_ERROR);
 }
