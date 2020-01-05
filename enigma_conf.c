@@ -6,16 +6,11 @@
 /*   By: fhenrion <fhenrion@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/22 18:16:21 by fhenrion          #+#    #+#             */
-/*   Updated: 2019/12/31 17:33:59 by fhenrion         ###   ########.fr       */
+/*   Updated: 2020/01/05 09:12:32 by fhenrion         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "enigma.h"
-
-static int		check_char(char c)
-{
-	return (c >= 'A' && c <= 'Z');
-}
 
 static t_error	next_token(char **str, char c)
 {
@@ -126,7 +121,7 @@ static t_error	parse_wires(t_conf *conf, char **str)
 
 	bzero(conf->wires[0], 13);
 	bzero(conf->wires[1], 13);
-	while (check_char(**str) && i < 13)
+	while (**str >= 'A' && **str <= 'Z' && i < 13)
 	{
 		if (parse_wire(conf, str, i))
 			return (ERROR);

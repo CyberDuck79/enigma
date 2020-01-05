@@ -6,17 +6,12 @@
 /*   By: fhenrion <fhenrion@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/17 11:04:45 by fhenrion          #+#    #+#             */
-/*   Updated: 2020/01/04 17:32:56 by fhenrion         ###   ########.fr       */
+/*   Updated: 2020/01/05 09:11:30 by fhenrion         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "enigma.h"
 #include <stdio.h>
-
-static int	check_char(char c)
-{
-	return (c >= 'A' && c <= 'Z');
-}
 
 static char	wire(t_conf *conf, char c)
 {
@@ -68,7 +63,7 @@ t_error		encode(t_conf *conf, char *str)
 
 	while (*str)
 	{
-		if (check_char(*str))
+		if (*str >= 'A' && *str <= 'Z')
 		{
 			rotors_shift(conf);
 			*enc_char = cypher(conf, wire(conf, *str) - 65, 0, 0);
