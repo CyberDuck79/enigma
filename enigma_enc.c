@@ -6,13 +6,16 @@
 /*   By: fhenrion <fhenrion@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/17 11:04:45 by fhenrion          #+#    #+#             */
-/*   Updated: 2020/01/05 09:11:30 by fhenrion         ###   ########.fr       */
+/*   Updated: 2020/01/08 11:49:38 by fhenrion         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "enigma.h"
 #include <stdio.h>
 
+/*
+return the the char to encrypt
+*/
 static char	wire(t_conf *conf, char c)
 {
 	size_t	i = 0;
@@ -28,6 +31,10 @@ static char	wire(t_conf *conf, char c)
 	return (c);
 }
 
+/*
+Rotors shift
+do the rotations of the rotors
+*/
 static void	rotors_shift(t_conf *conf)
 {
 	if (++conf->position[0] > 25)
@@ -42,6 +49,15 @@ static void	rotors_shift(t_conf *conf)
 	}
 }
 
+/*
+Recursive Encryption cypher
+Enter in recursion for each rotor of the cypher
+
+d) control the direction through rotors circuit
+r) index of the rotor in execution
+i) index of the translation
+return the final encrypted char
+*/
 static char	cypher(t_conf *conf, int i, t_rotor r, t_dir d)
 {
 	if (r == REFLECTOR)
@@ -53,10 +69,18 @@ static char	cypher(t_conf *conf, int i, t_rotor r, t_dir d)
 		i += 26;
 	if (r == ROTOR_I && d == REFLECTION)
 		return ((char)(i + 65));
-	return (cypher(conf, i, d ? r - 1 : r + 1, d));
+	return (cypher(conf, i, (d ? r - 1 : r + 1), d));
 }
 
-t_error		encode(t_conf *conf, char *str)
+/*
+Encryption controller
+browse the input sequence, do the wires connection
+and the cypher execution
+
+conf) contains the rotors, positions and the reflector
+str) input sequence
+*/
+void		encode(t_conf *conf, char *str)
 {
 	char	enc_str[strlen(str) + 1];
 	char	*enc_char = enc_str;
@@ -75,5 +99,4 @@ t_error		encode(t_conf *conf, char *str)
 	*enc_char = '\0';
 	write(1, enc_str, strlen(enc_str));
 	write(1, "\n", 1);
-	return (NO_ERROR);
 }

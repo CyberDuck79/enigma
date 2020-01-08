@@ -6,7 +6,7 @@
 /*   By: fhenrion <fhenrion@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/16 16:10:47 by fhenrion          #+#    #+#             */
-/*   Updated: 2019/12/31 17:33:41 by fhenrion         ###   ########.fr       */
+/*   Updated: 2020/01/08 12:00:25 by fhenrion         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,10 @@
 # include <unistd.h>
 # include <string.h>
 # include <stdint.h>
+
+/*
+Rotors and reflectors internal connections definitions
+*/
 
 # define RTR_I			(const int [26])\
 {4,10,12,5,11,6,3,16,21,25,13,19,14,22,24,7,23,20,18,15,0,8,1,17,2,9}
@@ -55,6 +59,10 @@
 # define REFLECTOR_C	(const int [26])\
 {17,3,14,1,9,13,19,10,21,4,7,12,11,5,2,22,25,0,23,6,24,8,15,18,20,16}
 
+/*
+Rotors and reflectors tabs definitions
+*/
+
 # define ROTORS			(const int* [8])\
 {RTR_I,RTR_II,RTR_III,RTR_IV,RTR_V,RTR_VI,RTR_VII,RTR_VIII}
 # define R_ROTORS		(const int* [8])\
@@ -62,6 +70,9 @@
 # define REFLECTORS		(const int* [2])\
 {REFLECTOR_B,REFLECTOR_C}
 
+/*
+configured rotors and reflector index
+*/
 typedef enum	e_rotor
 {
 	ROTOR_I,
@@ -70,18 +81,32 @@ typedef enum	e_rotor
 	REFLECTOR
 }				t_rotor;
 
+/*
+direction in the encryption circuit
+*/
 typedef enum	e_dir
 {
 	FIRST_PASS,
 	REFLECTION
 }				t_dir;
 
+/*
+error flag
+*/
 typedef enum	e_error
 {
 	NO_ERROR,
 	ERROR
 }				t_error;
 
+/*
+Configuration and machine state structure
+
+rotor) rotors configuration
+reflector) reflector configuration
+position) state of the rotors positions
+wires) wires configuration
+*/
 typedef struct	s_conf
 {
 	int			rotor[3][2][26];
@@ -90,7 +115,13 @@ typedef struct	s_conf
 	char		wires[2][13];
 }				t_conf;
 
+/*
+Public methods:
+get_conf) parse the sequence or return error
+encode) encrypt the input sequnce
+*/
+
 t_error			get_conf(t_conf *conf, char *str);
-t_error			encode(t_conf *conf, char *str);
+void			encode(t_conf *conf, char *str);
 
 #endif

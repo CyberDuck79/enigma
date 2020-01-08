@@ -6,12 +6,20 @@
 /*   By: fhenrion <fhenrion@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/22 18:16:21 by fhenrion          #+#    #+#             */
-/*   Updated: 2020/01/05 09:12:32 by fhenrion         ###   ########.fr       */
+/*   Updated: 2020/01/08 11:49:27 by fhenrion         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "enigma.h"
 
+/*
+tocken controller
+skip all the char before next token char
+
+**str) pointer to input
+c) token
+return error if \0 or success if c
+*/
 static t_error	next_token(char **str, char c)
 {
 	while (**str && **str != c)
@@ -22,6 +30,14 @@ static t_error	next_token(char **str, char c)
 	return (NO_ERROR);
 }
 
+/*
+Rotor checker
+check of rotor number is valid and if there no rotor in double
+
+rotor) the rotor sequence
+nb) index of the rotor
+return error or success
+*/
 static t_error	check_rotor_nb(int *rotor, int nb)
 {
 	if (rotor[nb] < 0 || rotor[nb] > 7)
@@ -33,12 +49,21 @@ static t_error	check_rotor_nb(int *rotor, int nb)
 	return (NO_ERROR);
 }
 
+/*
+copy the rotor from the rotors tab at index i
+*/
 static void		copy_rotor(const int **rotors, int i, int *rotor)
 {
 	memcpy(rotor, rotors[i], sizeof(int) * 26);
 }
 
-// inverser le sens d'entree des rotors
+/*
+Rotors parsing controller
+control the rotors and reflector parsing sequence
+
+**str) pointer to input
+return error in the parsing sequence or parsing success
+*/
 static t_error	parse_rotors(t_conf *conf, char **str)
 {
 	int	rotor_nb[3] = {0};
@@ -67,6 +92,9 @@ static t_error	parse_rotors(t_conf *conf, char **str)
 	return (next_token(str, '-'));
 }
 
+/*
+check if position < 0 || position > 25
+*/
 static t_error	check_position(int position)
 {
 	if (position < 0 || position > 25)
@@ -74,6 +102,13 @@ static t_error	check_position(int position)
 	return (NO_ERROR);
 }
 
+/*
+Positions parsing controller
+control the parsing of a Position, check syntax
+
+**str) pointer to input
+return error in the parsing or parsing success
+*/
 static t_error	parse_positions(t_conf *conf, char **str)
 {
 	conf->position[0] = (**str - 65);
@@ -88,6 +123,12 @@ static t_error	parse_positions(t_conf *conf, char **str)
 	return (NO_ERROR);
 }
 
+/*
+Duplicate letter checker
+check if no letter already in connected wires
+
+return error or succes
+*/
 static t_error	check_wire(t_conf *conf, char *str)
 {
 	size_t	i = 0;
@@ -101,6 +142,14 @@ static t_error	check_wire(t_conf *conf, char *str)
 	return (NO_ERROR);
 }
 
+/*
+Wire parsing controller
+control the parsing of a wire, check syntax
+
+**str) pointer to input
+wire_nb) index of the connection
+return error in the parsing or parsing success
+*/
 static t_error	parse_wire(t_conf *conf, char **str, size_t wire_nb)
 {
 	if (check_wire(conf, *str))
@@ -115,6 +164,13 @@ static t_error	parse_wire(t_conf *conf, char **str, size_t wire_nb)
 	return (NO_ERROR);
 }
 
+/*
+Wires parsing controller
+initialize the wires tabs control the sequence of wires parsing
+
+**str) pointer to input
+return error in the parsing sequence or parsing success
+*/
 static t_error	parse_wires(t_conf *conf, char **str)
 {
 	size_t	i = 0;
@@ -130,6 +186,14 @@ static t_error	parse_wires(t_conf *conf, char **str)
 	return (**str ? ERROR : NO_ERROR);
 }
 
+/*
+Configuration controller
+control the sequence of parsing
+
+conf) contains the rotors, positions and the reflector
+str) input
+return error in the parsing sequence or parsing success
+*/
 t_error			get_conf(t_conf *conf, char *str)
 {
 	if (parse_rotors(conf, &str))
