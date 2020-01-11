@@ -93,7 +93,7 @@ static t_error	parse_rotors(t_conf *conf, char **str)
 }
 
 /*
-check if position < 0 || position > 25
+check if position is valid
 */
 static t_error	check_position(int position)
 {
@@ -125,7 +125,7 @@ static t_error	parse_positions(t_conf *conf, char **str)
 
 /*
 Duplicate letter checker
-check if no letter already in connected wires
+check if the letter is not already connected to a wire
 
 return error or succes
 */
@@ -166,7 +166,7 @@ static t_error	parse_wire(t_conf *conf, char **str, size_t wire_nb)
 
 /*
 Wires parsing controller
-initialize the wires tabs control the sequence of wires parsing
+initialize the wires tabs and control the sequence of wires parsing
 
 **str) pointer to input
 return error in the parsing sequence or parsing success
