@@ -6,7 +6,7 @@
 /*   By: fhenrion <fhenrion@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/17 11:04:45 by fhenrion          #+#    #+#             */
-/*   Updated: 2020/01/08 11:49:38 by fhenrion         ###   ########.fr       */
+/*   Updated: 2020/01/17 09:32:17 by fhenrion         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,6 +69,7 @@ static char	cypher(t_conf *conf, int i, t_rotor r, t_dir d)
 		i += 26;
 	if (r == ROTOR_I && d == REFLECTION)
 		return ((char)(i + 65));
+	printf("%c -> ", (char)(i + 65));
 	return (cypher(conf, i, (d ? r - 1 : r + 1), d));
 }
 
@@ -80,23 +81,25 @@ and the cypher execution
 conf) contains the rotors, positions and the reflector
 str) input sequence
 */
-void		encode(t_conf *conf, char *str)
+void		encode(t_conf *conf, char *message)
 {
-	char	enc_str[strlen(str) + 1];
-	char	*enc_char = enc_str;
+	char	enc_message[strlen(message) + 1];
+	char	*enc_char = enc_message;
 
-	while (*str)
+	printf("Original message : %s\n\n", message);
+	while (*message)
 	{
-		if (*str >= 'A' && *str <= 'Z')
+		if (*message >= 'A' && *message <= 'Z')
 		{
 			rotors_shift(conf);
-			*enc_char = cypher(conf, wire(conf, *str) - 65, 0, 0);
+			printf("%c -> ", *message);
+			*enc_char = cypher(conf, wire(conf, *message) - 65, 0, 0);
 			*enc_char = wire(conf, *enc_char);
+			printf("%c\n", *enc_char);
 			enc_char++;
 		}
-		str++;
+		message++;
 	}
 	*enc_char = '\0';
-	write(1, enc_str, strlen(enc_str));
-	write(1, "\n", 1);
+	printf("\nEncrypted message : %s\n", enc_message);
 }

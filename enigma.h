@@ -6,7 +6,7 @@
 /*   By: fhenrion <fhenrion@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/16 16:10:47 by fhenrion          #+#    #+#             */
-/*   Updated: 2020/01/08 12:00:25 by fhenrion         ###   ########.fr       */
+/*   Updated: 2020/01/17 09:15:14 by fhenrion         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 
 # include <stdlib.h>
 # include <unistd.h>
+# include <stdio.h>
 # include <string.h>
 # include <stdint.h>
 
