@@ -8,8 +8,8 @@ seconde arg : message
 ### configration :
 3 rotors among 8 to put in the machine, order matters and rotors cannot be used twice.  
 1 reflector : B or C.  
-3 starting positions set by letter (A-Z).  
-0 to 13 wires that connect 2 letters, a letter can only be connected twice.
+3 starting positions configured by letter (A-Z).  
+0 to 13 wires that connect 2 letters, a letter can only be connected once.
 ### configuration syntax :
 rotor1-rotor2-rotor3-reflector-position1-position2-position3-wire1_letter1/wire1_letter2-wire2_letter1/wire2_letter2...  
 exemple :  
