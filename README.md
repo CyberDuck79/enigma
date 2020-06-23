@@ -5,7 +5,7 @@ Implementation of a enigma machine in C.
 compilation : launch make command  
 first arg : configuration  
 seconde arg : message  
-### configration :
+### configuration :
 3 rotors among 8 to put in the machine, order matters and rotors cannot be used twice.  
 1 reflector : B or C.  
 3 starting positions configured by letter (A-Z).  
