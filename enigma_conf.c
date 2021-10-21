@@ -6,7 +6,7 @@
 /*   By: fhenrion <fhenrion@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/22 18:16:21 by fhenrion          #+#    #+#             */
-/*   Updated: 2020/01/11 15:09:12 by fhenrion         ###   ########.fr       */
+/*   Updated: 2021/01/31 20:39:42 by fhenrion         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,23 +66,18 @@ return error in the parsing sequence or parsing success
 */
 static t_error	parse_rotors(t_conf *conf, char **str)
 {
-	int	rotor_nb[3] = {0};
+	int		rotor_nb[3] = {0};
+	size_t	i = 0;
 
-	rotor_nb[0] = atoi(*str) - 1;
-	if (check_rotor_nb(rotor_nb, 0) || next_token(str, '-'))
-		return (ERROR);
-	copy_rotor(ROTORS, rotor_nb[0], conf->rotor[0][0]);
-	copy_rotor(R_ROTORS, rotor_nb[0], conf->rotor[0][1]);
-	rotor_nb[1] = atoi(*str) - 1;
-	if (check_rotor_nb(rotor_nb, 1) || next_token(str, '-'))
-		return (ERROR);
-	copy_rotor(ROTORS, rotor_nb[1], conf->rotor[1][0]);
-	copy_rotor(R_ROTORS, rotor_nb[1], conf->rotor[1][1]);
-	rotor_nb[2] = atoi(*str) - 1;
-	if (check_rotor_nb(rotor_nb, 2) || next_token(str, '-'))
-		return (ERROR);
-	copy_rotor(ROTORS, rotor_nb[2], conf->rotor[2][0]);
-	copy_rotor(R_ROTORS, rotor_nb[2], conf->rotor[2][1]);
+	while (i < 3)
+	{
+		rotor_nb[i] = atoi(*str) - 1;
+		if (check_rotor_nb(rotor_nb, i) || next_token(str, '-'))
+			return (ERROR);
+		copy_rotor(ROTORS, rotor_nb[i], conf->rotor[i][0]);
+		copy_rotor(R_ROTORS, rotor_nb[i], conf->rotor[i][1]);
+		++i;
+	}
 	if (**str == 'B')
 		copy_rotor(REFLECTORS, 0, conf->reflector);
 	else if (**str == 'C')
@@ -111,15 +106,15 @@ return error in the parsing or parsing success
 */
 static t_error	parse_positions(t_conf *conf, char **str)
 {
-	conf->position[0] = (**str - 65);
-	if (check_position(conf->position[0]) || next_token(str, '-'))
-		return (ERROR);
-	conf->position[1] = (**str - 65);
-	if (check_position(conf->position[1]) || next_token(str, '-'))
-		return (ERROR);
-	conf->position[2] = (**str - 65);
-	if (check_position(conf->position[2]) || next_token(str, '-'))
-		return (ERROR);
+	size_t	i = 0;
+
+	while (i < 3)
+	{
+		conf->position[i] = (**str - 65);
+		if (check_position(conf->position[i]) || next_token(str, '-'))
+			return (ERROR);
+		++i;
+	}
 	return (NO_ERROR);
 }
 
